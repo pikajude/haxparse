@@ -1,11 +1,41 @@
 module HaxParse.AST where
 
 import Data.ByteString.Lazy
+import Data.IntMap
 import Data.Word
+import HaxParse.AST.TH
 
-data Event = Event deriving Show
+data Move = Nop | Move [Direction] | Kick | MoveKick [Direction] deriving Show
 
-data Side = Red | Blue deriving Show
+data Direction = Up | Left | Down | Right deriving Show
+
+data Action = Action { actPlayerId   :: Key
+                     , actFrameCount :: Word32
+                     , actEvent      :: Event
+                     } deriving Show
+
+data Side = Red | Blue | Spec deriving Show
+
+data Event = NewPlayer { npId      :: Key
+                       , npName    :: ByteString
+                       , npAdmin   :: Bool
+                       , npCountry :: ByteString
+                       }
+           | Departure { dId    :: Word32
+                       , kicked :: Bool
+                       , banned :: Bool
+                       , reason :: Maybe ByteString
+                       }
+           | ChangeAvatar ByteString
+           | Chat ByteString
+           | StartMatch
+           | StopMatch
+           | TeamChange Word32 Side
+           | DiscMove Move
+           | PingBroadcast [(Word32, Word8)]
+           | TimeUpdate deriving (Show)
+
+makeIsFns ''Event
 
 data Stadium = Classic | Easy | Small | Big
              | Rounded | Hockey | BigHockey | BigEasy
@@ -43,18 +73,17 @@ data Room = Room { roomName     :: ByteString
                  , stadium      :: Stadium
                  } deriving (Show)
 
-data Player = Player { playerId :: Word32
-                     , name     :: ByteString
-                     , admin :: Bool
-                     , team :: Side
-                     , number :: Word8
-                     , avatar :: ByteString
-                     , input :: Word32
+data Player = Player { name     :: ByteString
+                     , admin    :: Bool
+                     , team     :: Side
+                     , number   :: Word8
+                     , avatar   :: ByteString
+                     , input    :: Word32
                      , autoKick :: Bool
-                     , desync :: Bool
-                     , country :: ByteString
+                     , desync   :: Bool
+                     , country  :: ByteString
                      , handicap :: Word16
-                     , pDiscId :: Word32
+                     , pDiscId  :: Word32
                      } deriving (Show)
 
 data Replay = Replay { version    :: Word32
@@ -63,6 +92,6 @@ data Replay = Replay { version    :: Word32
                      , room       :: Room
                      , inProgress :: Bool
                      , discs      :: [Disc]
-                     , players    :: [Player]
-                     , events     :: [Event]
+                     , players    :: IntMap Player
+                     , events     :: [Action]
                      } deriving Show
