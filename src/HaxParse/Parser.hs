@@ -198,17 +198,18 @@ player = do pid <- fromIntegral <$> int32
             ct <- str
             h <- int16
             did <- int32
-            let p = Player { name = uname
-                           , admin = a
-                           , team = t
-                           , number = n
-                           , avatar = av
-                           , input = inp
+            let p = Player { name     = uname
+                           , initial  = True
+                           , admin    = a
+                           , team     = t
+                           , number   = n
+                           , avatar   = av
+                           , input    = inp
                            , autoKick = ak
-                           , desync = d
-                           , country = ct
+                           , desync   = d
+                           , country  = ct
                            , handicap = h
-                           , pDiscId = did
+                           , pDiscId  = did
                            }
             modifyState (playerList %~ I.insert pid p)
 
@@ -246,17 +247,18 @@ newPlayer = do i <- fromIntegral <$> int32
                n <- str
                ai <- bool
                ct <- str
-               let p = Player { name = n
-                              , admin = ai
-                              , team = Spec
-                              , number = 0
-                              , avatar = ""
-                              , input = 0
+               let p = Player { name     = n
+                              , initial  = False
+                              , admin    = ai
+                              , team     = Spec
+                              , number   = 0
+                              , avatar   = ""
+                              , input    = 0
                               , autoKick = False
-                              , desync = False
-                              , country = ct
+                              , desync   = False
+                              , country  = ct
                               , handicap = 0
-                              , pDiscId = -1
+                              , pDiscId  = -1
                               }
                modifyState (playerList %~ I.insert i p)
                return $ NewPlayer { npId      = i

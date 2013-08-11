@@ -6,6 +6,6 @@ import           HaxParse.AST
 import qualified HaxParse.Output.Plain as Plain
 import           HaxParse.Options
 
-outputWith :: OutputType -> Replay -> IO ()
-outputWith Plain x = Plain.render x
-outputWith JSON _ = error "no JSON renderer yet"
+outputWith :: Opts -> Replay -> IO ()
+outputWith opts x = case outputType opts of JSON -> error "no JSON renderer yet"
+                                            _ -> Plain.render opts x

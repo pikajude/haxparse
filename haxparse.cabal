@@ -22,8 +22,11 @@ executable haxparse
                   data-default == 0.5.*,
                   lens == 3.9.*,
                   optparse-applicative == 0.5.*,
+                  mtl == 2.1.*,
                   parsec == 3.1.*,
+                  split == 0.2.*,
                   template-haskell == 2.8.*,
                   transformers == 0.3.*,
+                  utf8-string == 0.3.*,
                   zlib == 0.5.*
-  extensions:     FlexibleInstances, MultiParamTypeClasses, OverloadedStrings, TemplateHaskell
+  extensions:     FlexibleInstances, MultiParamTypeClasses, MultiWayIf, OverloadedStrings, TemplateHaskell

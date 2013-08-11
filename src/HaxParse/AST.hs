@@ -74,6 +74,7 @@ data Room = Room { roomName     :: ByteString
                  } deriving (Show)
 
 data Player = Player { name     :: ByteString
+                     , initial  :: Bool
                      , admin    :: Bool
                      , team     :: Side
                      , number   :: Word8
