@@ -7,13 +7,15 @@ import           Codec.Compression.Zlib
 import           Control.Applicative        ((<$>), (<*>), pure)
 import           Control.Lens               hiding (Action)
 import           Control.Monad
+import           Data.Binary
+import           Data.Binary.Get
+import           Data.Binary.IEEE754
 import           Data.Bits
 import qualified Data.ByteString.Lazy.Char8 as C
 import           Data.Char
 import           Data.Default
 import qualified Data.IntMap                as I
 import           Data.Monoid
-import           Data.Word
 import           HaxParse.AST
 import           Numeric
 import           Prelude                    hiding (Left, Right)
@@ -21,7 +23,6 @@ import           Text.Parsec.Char
 import           Text.Parsec.Combinator
 import           Text.Parsec.Error
 import           Text.Parsec.Prim
-import           Unsafe.Coerce
 
 data ParserState = ParserState { _frame      :: Word32
                                , _curDiscId  :: Word32
@@ -101,18 +102,19 @@ room_ = do roomname <- str
 
 int64 :: Parser Word64
 int64 = do s <- count 8 anyChar
-           return . sum $ zipWith shiftL (fromIntegral . ord <$> s) [56,48..]
+           return $ runGet getWord64be $ C.pack s
 
 double :: Parser Double
-double = unsafeCoerce <$> int64
+double = do s <- count 8 anyChar
+            return $ runGet getFloat64be $ C.pack s
 
 int32 :: Parser Word32
 int32 = do s <- count 4 anyChar
-           return . sum $ zipWith shiftL (fromIntegral . ord <$> s) [24,16..]
+           return $ runGet getWord32be $ C.pack s
 
 int16 :: Parser Word16
 int16 = do s <- count 2 anyChar
-           return . sum $ zipWith shiftL (fromIntegral . ord <$> s) [8,0]
+           return $ runGet getWord16be $ C.pack s
 
 int8 :: Parser Word8
 int8 = fromIntegral . ord <$> anyChar

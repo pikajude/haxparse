@@ -17,8 +17,10 @@ executable haxparse
   main-is:        Main.hs
   hs-source-dirs: src
   build-depends:  base == 4.6.*,
+                  binary == 0.7.*,
                   bytestring == 0.10.*,
                   containers == 0.5.*,
+                  data-binary-ieee754 == 0.4.*,
                   data-default == 0.5.*,
                   lens == 3.9.*,
                   optparse-applicative == 0.5.*,
