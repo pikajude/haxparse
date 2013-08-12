@@ -1,3 +1,4 @@
+{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 
 module HaxParse.Output.Plain (
