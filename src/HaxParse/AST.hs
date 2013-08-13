@@ -5,16 +5,16 @@ import Data.IntMap
 import Data.Word
 import HaxParse.AST.TH
 
-data Move = Nop | Move [Direction] | Kick | MoveKick [Direction] deriving Show
+data Move = Nop | Move [Direction] | Kick | MoveKick [Direction] deriving (Eq, Show)
 
-data Direction = Up | Left | Down | Right deriving Show
+data Direction = Up | Left | Down | Right deriving (Eq, Show)
 
 data Action = Action { actPlayerId   :: Key
                      , actFrameCount :: Word32
                      , actEvent      :: Event
-                     } deriving Show
+                     } deriving (Eq, Show)
 
-data Side = Red | Blue | Spec deriving Show
+data Side = Red | Blue | Spec deriving (Eq, Show)
 
 data Event = NewPlayer { npId      :: Key
                        , npName    :: ByteString
@@ -33,7 +33,7 @@ data Event = NewPlayer { npId      :: Key
            | TeamChange Word32 Side
            | DiscMove Move
            | PingBroadcast [(Word32, Word8)]
-           | TimeUpdate deriving (Show)
+           | TimeUpdate deriving (Eq, Show)
 
 makeIsFns ''Event
 
@@ -42,9 +42,9 @@ data Stadium = Classic | Easy | Small | Big
              | BigRounded | Huge | Custom
              deriving (Bounded, Eq, Enum, Ord, Show)
 
-data Color = Color String deriving Show
+data Color = Color String deriving (Eq, Show)
 
-data Mask = Mask [String] deriving Show
+data Mask = Mask [String] deriving (Eq, Show)
 
 data Disc = Disc { discId       :: Word32
                  , pos          :: (Double, Double)
@@ -56,7 +56,7 @@ data Disc = Disc { discId       :: Word32
                  , color        :: Color
                  , mask         :: Mask
                  , group        :: Mask
-                 } deriving (Show)
+                 } deriving (Eq, Show)
 
 data Room = Room { roomName     :: ByteString
                  , locked       :: Bool
@@ -71,7 +71,7 @@ data Room = Room { roomName     :: ByteString
                  , timer        :: Double
                  , pauseTimer   :: Word8
                  , stadium      :: Stadium
-                 } deriving (Show)
+                 } deriving (Eq, Show)
 
 data Player = Player { name     :: ByteString
                      , initial  :: Bool
@@ -85,7 +85,7 @@ data Player = Player { name     :: ByteString
                      , country  :: ByteString
                      , handicap :: Word16
                      , pDiscId  :: Word32
-                     } deriving (Show)
+                     } deriving (Eq, Show)
 
 data Replay = Replay { version    :: Word32
                      , frameCount :: Word32
@@ -95,4 +95,4 @@ data Replay = Replay { version    :: Word32
                      , discs      :: [Disc]
                      , players    :: IntMap Player
                      , events     :: [Action]
-                     } deriving Show
+                     } deriving (Eq, Show)
