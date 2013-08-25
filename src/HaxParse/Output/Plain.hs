@@ -1,4 +1,3 @@
-{-# LANGUAGE MultiWayIf #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 
 module HaxParse.Output.Plain (
@@ -102,9 +101,11 @@ showEv (NewPlayer _ n _ c) _ = return $ printf "new player joins: %s (from %s)" 
 showEv (ChangeAvatar s) p = return $ printf "%s changes avatar to \"%s\"" (toString $ name p) (toString s)
 showEv (Departure d k b r) p = do ps <- asks snd
                                   let n = toString . name $ ps I.! fromIntegral d
-                                  if | b -> return $ printf "%s bans %s (%s)" n (toString $ name p) (maybe "no reason" toString r)
-                                     | k -> return $ printf "%s kicks %s (%s)" n (toString $ name p) (maybe "no reason" toString r)
-                                     | otherwise -> return $ printf "%s leaves" n
+                                  if b
+                                      then return $ printf "%s bans %s (%s)" n (toString $ name p) (maybe "no reason" toString r)
+                                      else if k
+                                               then return $ printf "%s kicks %s (%s)" n (toString $ name p) (maybe "no reason" toString r)
+                                               else return $ printf "%s leaves" n
 showEv StopMatch p = return $ printf "%s stops match" (toString $ name p)
 showEv (TeamChange m t) p = do ps <- asks snd
                                let n = toString . name $ ps I.! fromIntegral m
