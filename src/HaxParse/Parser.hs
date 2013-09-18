@@ -5,7 +5,6 @@ module HaxParse.Parser where
 
 import           Codec.Compression.Zlib
 import           Control.Applicative        ((<$>), (<*>), pure)
-import           Control.Lens               hiding (Action)
 import           Control.Monad
 import           Data.Binary
 import           Data.Binary.Get
@@ -24,14 +23,12 @@ import           Text.Parsec.Combinator
 import           Text.Parsec.Error
 import           Text.Parsec.Prim
 
-data ParserState = ParserState { _frame      :: Word32
-                               , _curDiscId  :: Word32
-                               , _playerList :: I.IntMap Player
+data ParserState = ParserState { frame      :: Word32
+                               , curDiscId  :: Word32
+                               , playerList :: I.IntMap Player
                                }
 
 instance Default ParserState where def = ParserState 0 0 mempty
-
-makeLenses ''ParserState
 
 type Parser = Parsec C.ByteString ParserState
 
@@ -58,7 +55,7 @@ haxParser = do vers <- int32
                players_
                count 14 $ char '\NUL'
                ev <- many event
-               plist <- fmap (^. playerList) getState
+               plist <- fmap playerList getState
                return Replay { version      = vers
                              , frameCount   = framecount
                              , firstFrame   = firstframe
@@ -145,8 +142,8 @@ discs_ = do s <- int32
             count (fromIntegral s) disc
 
 disc :: Parser Disc
-disc = do discid <- view curDiscId <$> getState
-          modifyState (curDiscId +~ 1)
+disc = do discid <- curDiscId <$> getState
+          modifyState (\p -> p { curDiscId = curDiscId p + 1 })
           posx <- double
           posy <- double
           speedx <- double
@@ -213,13 +210,13 @@ player = do pid <- fromIntegral <$> int32
                            , handicap = h
                            , pDiscId  = did
                            }
-            modifyState (playerList %~ I.insert pid p)
+            modifyState (\st -> st { playerList = I.insert pid p (playerList st) })
 
 event :: Parser Action
 event = do timeUpdate <- bool <?> "is it a time update?"
            when timeUpdate $ do frames <- int32
-                                modifyState (frame +~ frames)
-           fc <- view frame <$> getState
+                                modifyState (\st -> st { frame = frame st + frames })
+           fc <- frame <$> getState
            pid <- fromIntegral <$> int32
            evty <- int8
            result <- case evty of 0 -> newPlayer
@@ -262,7 +259,7 @@ newPlayer = do i <- fromIntegral <$> int32
                               , handicap = 0
                               , pDiscId  = -1
                               }
-               modifyState (playerList %~ I.insert i p)
+               modifyState (\st -> st { playerList = I.insert i p $ playerList st })
                return $ NewPlayer { npId      = i
                                   , npName    = n
                                   , npAdmin   = ai
