@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:          haxparse
-version:       0.2.0.0
+version:       0.3.0.0
 synopsis:      Readable HaxBall replays
 description:   Provides an interface for parsing HaxBall replays.
 homepage:      https://github.com/joelteon/haxparse
